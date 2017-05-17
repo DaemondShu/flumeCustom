@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.apache.flume.flume-ng-sinks:flume-hdfs-sink:1.8.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/flume/flume-ng-sinks/flume-hdfs-sink/1.8.0-SNAPSHOT/flume-hdfs-sink-1.8.0-20170416.221119-6.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/flume/flume-ng-sinks/flume-hdfs-sink/1.8.0-SNAPSHOT/flume-hdfs-sink-1.8.0-20170416.221119-6-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/flume/flume-ng-sinks/flume-hdfs-sink/1.8.0-SNAPSHOT/flume-hdfs-sink-1.8.0-20170416.221119-6-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

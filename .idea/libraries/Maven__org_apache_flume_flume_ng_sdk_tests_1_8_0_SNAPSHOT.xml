@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.apache.flume:flume-ng-sdk:tests:1.8.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/flume/flume-ng-sdk/1.8.0-SNAPSHOT/flume-ng-sdk-1.8.0-20170416.220950-6-tests.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/flume/flume-ng-sdk/1.8.0-SNAPSHOT/flume-ng-sdk-1.8.0-20170416.220950-6-test-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/flume/flume-ng-sdk/1.8.0-SNAPSHOT/flume-ng-sdk-1.8.0-20170416.220950-6-test-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
