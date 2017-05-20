@@ -32,11 +32,7 @@
             <version>1.7.0</version>
         </dependency>
 
-        <dependency>
-            <groupId>ch.ethz.iks</groupId>
-            <artifactId>r_osgi</artifactId>
-            <version>1.0.0.RC4</version>
-        </dependency>
+
 
 
     </dependencies>

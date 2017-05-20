@@ -27,8 +27,12 @@ import org.apache.flume.Context;
 import org.apache.flume.Event;
 import org.apache.flume.FlumeException;
 import org.apache.flume.channel.AbstractChannelSelector;
+import org.apache.flume.channel.MemoryChannel;
+import org.apache.velocity.runtime.directive.Foreach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.swing.text.StyledEditorKit;
 
 public class MyChannelSelector extends AbstractChannelSelector
 {
@@ -57,6 +61,15 @@ public class MyChannelSelector extends AbstractChannelSelector
     @Override
     public List<Channel> getRequiredChannels(Event event)
     {
+        List<Channel> result;
+        for (Channel memChannel: memChannels)
+        {
+            MyMemoryChannel t = (MyMemoryChannel) memChannel;
+            //check size
+
+
+        }
+
 //        String headerValue = event.getHeaders().get(headerName);
 //        if (headerValue == null || headerValue.trim().length() == 0)
 //        {

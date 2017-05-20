@@ -7,7 +7,6 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="flume-ng-core" />
-        <module name="flume-ng-node" />
         <module name="MonkeyDAgent" />
       </profile>
     </annotationProcessing>

@@ -6,8 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/MonkeyDAgent/MonkeyDAgent.iml" filepath="$PROJECT_DIR$/MonkeyDAgent/MonkeyDAgent.iml" />
       <module fileurl="file://$PROJECT_DIR$/MonkeyDClient/MonkeyDClient.iml" filepath="$PROJECT_DIR$/MonkeyDClient/MonkeyDClient.iml" />
       <module fileurl="file://$PROJECT_DIR$/apache-flume-1.7.0-bin/apache-flume-1.7.0-bin.iml" filepath="$PROJECT_DIR$/apache-flume-1.7.0-bin/apache-flume-1.7.0-bin.iml" />
-      <module fileurl="file://$PROJECT_DIR$/source/flume-ng-core/flume-ng-core.iml" filepath="$PROJECT_DIR$/source/flume-ng-core/flume-ng-core.iml" />
-      <module fileurl="file://$PROJECT_DIR$/source/flume-ng-node/flume-ng-node.iml" filepath="$PROJECT_DIR$/source/flume-ng-node/flume-ng-node.iml" />
+      <module fileurl="file://$PROJECT_DIR$/apache-flume-1.7.0-src/flume-ng-core/flume-ng-core.iml" filepath="$PROJECT_DIR$/apache-flume-1.7.0-src/flume-ng-core/flume-ng-core.iml" />
     </modules>
   </component>
 </project>
