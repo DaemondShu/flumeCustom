@@ -269,6 +269,7 @@ public class MyFileChannel extends BasicChannelSemantics {
     if (channelCounter == null) {
       channelCounter = new ChannelCounter(getName());
     }
+
   }
 
   @Override
@@ -602,6 +603,7 @@ public class MyFileChannel extends BasicChannelSemantics {
       }
       putList.clear();
       takeList.clear();
+
       channelCounter.setChannelSize(queue.getSize());
     }
 
