@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package monkey.d.channel;
+package org.apache.flume.channel;
 
 import com.google.common.base.Preconditions;
 import org.apache.flume.ChannelException;
@@ -26,12 +26,10 @@ import org.apache.flume.Event;
 import org.apache.flume.annotations.InterfaceAudience;
 import org.apache.flume.annotations.InterfaceStability;
 import org.apache.flume.annotations.Recyclable;
-import org.apache.flume.channel.BasicChannelSemantics;
-import org.apache.flume.channel.BasicTransactionSemantics;
-import org.apache.flume.instrumentation.ChannelCounter;
-import org.codehaus.jackson.JsonNode;
+import org.apache.flume.instrumentation.MyChannelCounter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.rmi.runtime.Log;
 
 import javax.annotation.concurrent.GuardedBy;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -57,7 +55,8 @@ public class MyMemoryChannel extends BasicChannelSemantics
     private static Logger LOGGER = LoggerFactory.getLogger(MyMemoryChannel.class);
     private static final Integer defaultCapacity = 100;
     private static final Integer defaultTransCapacity = 100;
-    private static final double byteCapacitySlotSize = 100;
+    private static final Integer defaultByteCapacitySlotSize = 100;
+
     private static final Long defaultByteCapacity = (long) (Runtime.getRuntime().maxMemory() * .80);
     private static final Integer defaultByteCapacityBufferPercentage = 20;
 
@@ -67,11 +66,11 @@ public class MyMemoryChannel extends BasicChannelSemantics
     {
         private LinkedBlockingDeque<Event> takeList;
         private LinkedBlockingDeque<Event> putList;
-        private final ChannelCounter channelCounter;
+        private final MyChannelCounter channelCounter;
         private int putByteCounter = 0;
         private int takeByteCounter = 0;
 
-        public MemoryTransaction(int transCapacity, ChannelCounter counter)
+        public MemoryTransaction(int transCapacity, MyChannelCounter counter)
         {
             putList = new LinkedBlockingDeque<Event>(transCapacity);
             takeList = new LinkedBlockingDeque<Event>(transCapacity);
@@ -179,7 +178,12 @@ public class MyMemoryChannel extends BasicChannelSemantics
                 channelCounter.addToEventTakeSuccessCount(takes);
             }
 
+            //TODO remove
+//            LOGGER.debug("commit over, slotSize:" +  byteCapacitySlotSize);
+//            LOGGER.debug("commit over, remaining length:" +  bytesRemaining.availablePermits());
+
             channelCounter.setChannelSize(queue.size());
+            channelCounter.setChannelBytesRemaining(bytesRemaining.availablePermits());
         }
 
         @Override
@@ -202,7 +206,9 @@ public class MyMemoryChannel extends BasicChannelSemantics
             takeByteCounter = 0;
 
             queueStored.release(takes);
+
             channelCounter.setChannelSize(queue.size());
+            channelCounter.setChannelBytesRemaining(bytesRemaining.availablePermits());
         }
 
     }
@@ -231,8 +237,9 @@ public class MyMemoryChannel extends BasicChannelSemantics
     private volatile int byteCapacity;
     private volatile int lastByteCapacity;
     private volatile int byteCapacityBufferPercentage;
+    private double byteCapacitySlotSize;
     private Semaphore bytesRemaining;
-    private ChannelCounter channelCounter;
+    private MyChannelCounter channelCounter;
 
     public MyMemoryChannel()
     {
@@ -261,12 +268,33 @@ public class MyMemoryChannel extends BasicChannelSemantics
                     + "default capacity of {}", defaultCapacity);
         }
 
+
         if (capacity <= 0)
         {
             capacity = defaultCapacity;
             LOGGER.warn("Invalid capacity specified, initializing channel to "
                     + "default capacity of {}", defaultCapacity);
         }
+
+        try
+        {
+            byteCapacitySlotSize = context.getInteger("byteCapacitySlotSize", defaultByteCapacitySlotSize);
+
+        } catch (NumberFormatException e)
+        {
+            byteCapacitySlotSize = defaultByteCapacitySlotSize;
+            LOGGER.warn("Invalid byteCapacitySlotSize specified, initializing channel to "
+                    + "default byteCapacitySlotSize of {}", defaultByteCapacitySlotSize);
+        }
+
+        if (byteCapacitySlotSize < 1)
+        {
+            byteCapacitySlotSize = defaultByteCapacitySlotSize;
+        }
+
+
+
+
         try
         {
             transCapacity = context.getInteger("transactionCapacity", defaultTransCapacity);
@@ -368,7 +396,7 @@ public class MyMemoryChannel extends BasicChannelSemantics
 
         if (channelCounter == null)
         {
-            channelCounter = new ChannelCounter(getName());
+            channelCounter = new MyChannelCounter(getName());
         }
     }
 
@@ -416,6 +444,8 @@ public class MyMemoryChannel extends BasicChannelSemantics
         channelCounter.setChannelSize(queue.size());
         channelCounter.setChannelCapacity(Long.valueOf(
                 queue.size() + queue.remainingCapacity()));
+        channelCounter.setChannelBytesCapacity(byteCapacity);
+        channelCounter.setChannelBytesRemaining(bytesRemaining.availablePermits());
         super.start();
     }
 

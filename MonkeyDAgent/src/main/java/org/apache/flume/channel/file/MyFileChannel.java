@@ -35,6 +35,7 @@ import org.apache.flume.annotations.InterfaceAudience;
 import org.apache.flume.annotations.InterfaceStability;
 import org.apache.flume.channel.BasicChannelSemantics;
 import org.apache.flume.channel.BasicTransactionSemantics;
+import org.apache.flume.channel.MMMemoryChannel;
 import org.apache.flume.channel.file.Log.Builder;
 import org.apache.flume.channel.file.encryption.EncryptionConfiguration;
 import org.apache.flume.channel.file.encryption.KeyProvider;
@@ -67,7 +68,7 @@ import java.util.concurrent.TimeUnit;
  * certainly use FileChannel but not by instantiating FileChannel objects.
  * Meaning the label Private applies to user-developers not user-operators.
  * In cases where a Channel is required by instantiated by user-developers
- * {@link org.apache.flume.channel.MemoryChannel} should be used.
+ * {@link MMMemoryChannel} should be used.
  * </p>
  */
 @InterfaceAudience.Private
