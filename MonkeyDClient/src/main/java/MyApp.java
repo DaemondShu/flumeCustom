@@ -15,7 +15,7 @@ public class MyApp
 
         // Send 10 events to the remote Flume agent. That agent should be
         // configured to listen with an AvroSource.
-        String sampleData = "Hello Flume!";
+        String sampleData = "Hello Flume!xxxxxxxxxxxxxxxxxxxxxxxsssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss";
         for (int i = 0; i < 10; i++)
         {
             client.sendDataToFlume(sampleData);

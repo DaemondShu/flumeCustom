@@ -48,6 +48,8 @@ public interface MyChannelCounterMBean
 
   long getChannelBytesRemaining();
 
+  long getChannelBytesCapacity();
+
   String getType();
 
   double getChannelFillPercentage();

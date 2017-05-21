@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package monkey.d.sink;
+package org.apache.flume.sink;
 
 import com.google.common.base.Strings;
 import org.apache.flume.Channel;
@@ -26,7 +26,6 @@ import org.apache.flume.EventDeliveryException;
 import org.apache.flume.Transaction;
 import org.apache.flume.conf.Configurable;
 import org.apache.flume.event.EventHelper;
-import org.apache.flume.sink.AbstractSink;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

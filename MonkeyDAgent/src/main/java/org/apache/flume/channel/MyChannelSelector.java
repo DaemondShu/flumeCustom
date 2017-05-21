@@ -1,4 +1,4 @@
-package monkey.d.channel;/*
+package org.apache.flume.channel;/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -17,22 +17,16 @@ package monkey.d.channel;/*
  * under the License.
  */
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.flume.Channel;
 import org.apache.flume.Context;
 import org.apache.flume.Event;
-import org.apache.flume.FlumeException;
-import org.apache.flume.channel.AbstractChannelSelector;
-import org.apache.flume.channel.MemoryChannel;
-import org.apache.velocity.runtime.directive.Foreach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.swing.text.StyledEditorKit;
 
 public class MyChannelSelector extends AbstractChannelSelector
 {
@@ -61,14 +55,16 @@ public class MyChannelSelector extends AbstractChannelSelector
     @Override
     public List<Channel> getRequiredChannels(Event event)
     {
-        List<Channel> result;
-        for (Channel memChannel: memChannels)
-        {
-            MyMemoryChannel t = (MyMemoryChannel) memChannel;
-            //check size
+        List<Channel> result = new ArrayList<Channel>();
 
-
-        }
+        return memChannels;
+        //TODO
+//        for (Channel memChannel: memChannels)
+//        {
+//            MyMemoryChannel t = (MyMemoryChannel) memChannel;
+//            //check size
+//            result.add(memChannel);
+//        }
 
 //        String headerValue = event.getHeaders().get(headerName);
 //        if (headerValue == null || headerValue.trim().length() == 0)
@@ -88,7 +84,7 @@ public class MyChannelSelector extends AbstractChannelSelector
 //        }
 //
 //        return channels;
-        return EMPTY_LIST;
+        //return EMPTY_LIST;
     }
 
     @Override
@@ -108,8 +104,8 @@ public class MyChannelSelector extends AbstractChannelSelector
     @Override
     public void configure(Context context)
     {
-        LOG.info("Channel Selector");
-        LOG.info("StackTrace", new Exception());
+//        LOG.info("Channel Selector");
+//        LOG.info("StackTrace", new Exception());
 
 
         Map<String, Channel> channelNameMap = getChannelNameMap();
