@@ -25,7 +25,7 @@ class MyRpcClientFacade
 
     public void sendDataToFlume(String data)
     {
-        // Create a Flume Event object that encapsulates the sample data
+        // Create a Flume Event object that encapsulates the sample dataItem
         Event event = EventBuilder.withBody(data, Charset.forName("UTF-8"));
 
 

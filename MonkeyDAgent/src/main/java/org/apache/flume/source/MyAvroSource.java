@@ -330,16 +330,16 @@ public class MyAvroSource extends AbstractSource implements EventDrivenSource,
     @Override
     public Status append(AvroFlumeEvent avroEvent)
     {
-        if (logger.isDebugEnabled())
-        {
-            if (LogPrivacyUtil.allowLogRawData())
-            {
-                logger.debug("Avro source {}: Received avro event: {}", getName(), avroEvent);
-            } else
-            {
-                logger.debug("Avro source {}: Received avro event", getName());
-            }
-        }
+//        if (logger.isDebugEnabled())
+//        {
+//            if (LogPrivacyUtil.allowLogRawData())
+//            {
+//                logger.debug("Avro source {}: Received avro event: {}", getName(), avroEvent);
+//            } else
+//            {
+//                logger.debug("Avro source {}: Received avro event", getName());
+//            }
+//        }
 
         sourceCounter.incrementAppendReceivedCount();
         sourceCounter.incrementEventReceivedCount();
@@ -367,8 +367,8 @@ public class MyAvroSource extends AbstractSource implements EventDrivenSource,
     @Override
     public Status appendBatch(List<AvroFlumeEvent> events)
     {
-        logger.debug("Avro source {}: Received avro event batch of {} events.",
-                getName(), events.size());
+//        logger.debug("Avro source {}: Received avro event batch of {} events.",
+//                getName(), events.size());
         sourceCounter.incrementAppendBatchReceivedCount();
         sourceCounter.addToEventReceivedCount(events.size());
 

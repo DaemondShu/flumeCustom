@@ -35,7 +35,6 @@ import org.apache.flume.annotations.InterfaceAudience;
 import org.apache.flume.annotations.InterfaceStability;
 import org.apache.flume.channel.BasicChannelSemantics;
 import org.apache.flume.channel.BasicTransactionSemantics;
-import org.apache.flume.channel.MMMemoryChannel;
 import org.apache.flume.channel.file.Log.Builder;
 import org.apache.flume.channel.file.encryption.EncryptionConfiguration;
 import org.apache.flume.channel.file.encryption.KeyProvider;
@@ -60,15 +59,6 @@ import java.util.concurrent.TimeUnit;
  * FileChannel works by writing all transactions to a set of directories
  * specified in the configuration. Additionally, when a commit occurs
  * the transaction is synced to disk.
- * </p>
- * <p>
- * FileChannel is marked
- * {@link InterfaceAudience.Private} because it
- * should only be instantiated via a configuration. For example, users should
- * certainly use FileChannel but not by instantiating FileChannel objects.
- * Meaning the label Private applies to user-developers not user-operators.
- * In cases where a Channel is required by instantiated by user-developers
- * {@link MMMemoryChannel} should be used.
  * </p>
  */
 @InterfaceAudience.Private
@@ -299,6 +289,8 @@ public class MyFileChannel extends BasicChannelSemantics {
       log = builder.build();
       log.replay();
       open = true;
+
+
 
       int depth = getDepth();
       Preconditions.checkState(queueRemaining.tryAcquire(depth),
@@ -564,6 +556,7 @@ public class MyFileChannel extends BasicChannelSemantics {
         log.lockShared();
         try {
           log.commitPut(transactionID);
+
           channelCounter.addToEventPutSuccessCount(puts);
           synchronized (queue) {
             while (!putList.isEmpty()) {
