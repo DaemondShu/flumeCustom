@@ -162,46 +162,19 @@ public class ChannelProcessor implements Configurable
     {
         Preconditions.checkNotNull(events, "Event list must not be null");
 
-        events = interceptorChain.intercept(events);
+        Throwable error = null;
+        boolean putSuccess = false;
 
-        Map<Channel, List<Event>> reqChannelQueue =
-                new LinkedHashMap<Channel, List<Event>>();
+        List<Channel> requiredChannels = selector.getRequiredChannels(null);
 
-        Map<Channel, List<Event>> optChannelQueue =
-                new LinkedHashMap<Channel, List<Event>>();
-
-        for (Event event : events)
+        if (requiredChannels.isEmpty())
         {
-            List<Channel> reqChannels = selector.getRequiredChannels(event);
-
-            for (Channel ch : reqChannels)
-            {
-                List<Event> eventQueue = reqChannelQueue.get(ch);
-                if (eventQueue == null)
-                {
-                    eventQueue = new ArrayList<Event>();
-                    reqChannelQueue.put(ch, eventQueue);
-                }
-                eventQueue.add(event);
-            }
-
-            List<Channel> optChannels = selector.getOptionalChannels(event);
-
-            for (Channel ch : optChannels)
-            {
-                List<Event> eventQueue = optChannelQueue.get(ch);
-                if (eventQueue == null)
-                {
-                    eventQueue = new ArrayList<Event>();
-                    optChannelQueue.put(ch, eventQueue);
-                }
-
-                eventQueue.add(event);
-            }
+            throw new ChannelException("no channel can be used");
         }
 
-        // Process required channels
-        for (Channel reqChannel : reqChannelQueue.keySet())
+
+        // Process required channels 一个事务一下子放全部
+        for (Channel reqChannel : requiredChannels)
         {
             Transaction tx = reqChannel.getTransaction();
             Preconditions.checkNotNull(tx, "Transaction object must not be null");
@@ -209,29 +182,21 @@ public class ChannelProcessor implements Configurable
             {
                 tx.begin();
 
-                List<Event> batch = reqChannelQueue.get(reqChannel);
-
-                for (Event event : batch)
+                for (Event event : events)
                 {
                     reqChannel.put(event);
                 }
 
                 tx.commit();
+
+                putSuccess = true;
+                break;
+
             } catch (Throwable t)
             {
                 tx.rollback();
-                if (t instanceof Error)
-                {
-                    LOG.error("Error while writing to required channel: " + reqChannel, t);
-                    throw (Error) t;
-                } else if (t instanceof ChannelException)
-                {
-                    throw (ChannelException) t;
-                } else
-                {
-                    throw new ChannelException("Unable to put batch on required " +
-                            "channel: " + reqChannel, t);
-                }
+                error = t ;
+
             } finally
             {
                 if (tx != null)
@@ -241,38 +206,19 @@ public class ChannelProcessor implements Configurable
             }
         }
 
-        // Process optional channels
-        for (Channel optChannel : optChannelQueue.keySet())
+        if (!putSuccess && error != null)
         {
-            Transaction tx = optChannel.getTransaction();
-            Preconditions.checkNotNull(tx, "Transaction object must not be null");
-            try
+            LOG.info("RUA! error happen");
+            if (error instanceof Error)   // 虚拟机相关的问题
             {
-                tx.begin();
-
-                List<Event> batch = optChannelQueue.get(optChannel);
-
-                for (Event event : batch)
-                {
-                    optChannel.put(event);
-                }
-
-                tx.commit();
-            } catch (Throwable t)
-            {
-                tx.rollback();
-                LOG.error("Unable to put batch on optional channel: " + optChannel, t);
-                if (t instanceof Error)
-                {
-                    throw (Error) t;
-                }
-            } finally
-            {
-                if (tx != null)
-                {
-                    tx.close();
-                }
+                //LOG.error("Error while writing to required channel: ");
+                throw (Error) error;
             }
+            else if (error instanceof ChannelException)
+            {
+                throw (ChannelException) error;
+            }
+            throw new ChannelException("RUA~ some thing unexpected happen!", error);
         }
     }
 
@@ -293,7 +239,7 @@ public class ChannelProcessor implements Configurable
     public void processEvent(Event event)
     {
 
-        event = interceptorChain.intercept(event);
+        //event = interceptorChain.intercept(event);
         if (event == null)
         {
             return;
@@ -301,8 +247,15 @@ public class ChannelProcessor implements Configurable
 
         // Process required channels
         Throwable error = null;
+        boolean putSuccess = false;
 
         List<Channel> requiredChannels = selector.getRequiredChannels(event);
+
+        if (requiredChannels.isEmpty())
+        {
+            throw new ChannelException("no channel can be used");
+        }
+
         for (Channel reqChannel : requiredChannels)
         {
             // predict size
@@ -317,6 +270,8 @@ public class ChannelProcessor implements Configurable
                 reqChannel.put(event);
 
                 tx.commit();
+
+                putSuccess = true;
 
                 break;
 
@@ -336,7 +291,7 @@ public class ChannelProcessor implements Configurable
             }
         }
 
-        if (error != null)
+        if (!putSuccess && error != null)
         {
             LOG.info("RUA! error happen");
             if (error instanceof Error)   // 虚拟机相关的问题
@@ -348,7 +303,7 @@ public class ChannelProcessor implements Configurable
             {
                 throw (ChannelException) error;
             }
-            throw (ChannelException) error;
+            throw new ChannelException("RUA~ some thing unexpected happen!", error);
         }
 
 

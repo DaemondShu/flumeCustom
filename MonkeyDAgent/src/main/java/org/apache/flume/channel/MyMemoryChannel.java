@@ -239,7 +239,15 @@ public class MyMemoryChannel extends BasicChannelSemantics
     private volatile int byteCapacityBufferPercentage;
     private double byteCapacitySlotSize;
     private Semaphore bytesRemaining;
+
+    public MyChannelCounter getChannelCounter()
+    {
+        return channelCounter;
+    }
+
     private MyChannelCounter channelCounter;
+
+
 
     public MyMemoryChannel()
     {

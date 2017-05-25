@@ -8,8 +8,18 @@
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 
+import org.apache.flume.Event;
+import org.apache.flume.event.EventBuilder;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.nio.charset.Charset;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MyApp
@@ -20,11 +30,11 @@ public class MyApp
     @Parameter(names = {"-n", "--num"} )
     int num = 10000;
 
-    @Parameter(names = {"-s", "--size"})   //batch size
-    int size = 1;
+    @Parameter(names = {"-b", "--batchSize"})   //batch batchSize
+    int batchSize = 100;
 
-    @Parameter(names = {"-b", "--bytes"})
-    int bytes = 100;
+    @Parameter(names = {"-s", "--singleDataSize"})
+    int singleDataSize = 10;
 
     @Parameter(names = {"-d", "--dataItem"})
     String dataItem = "102,110,130,140,qqq,789\n";
@@ -33,7 +43,7 @@ public class MyApp
     boolean help = false;
 
     @Parameter(names = {"-t", "--timeIntervalms"})
-    long logTimeInterval = 5000;  //10s
+    long logTimeInterval = 5000;  //5s
 
 
 
@@ -57,24 +67,25 @@ public class MyApp
 
 
 
-
-
-
-
-
-
-
         // Send 10 events to the remote Flume agent. That agent should be
         // configured to listen with an AvroSource.
         StringBuilder singleDataBuilder = new StringBuilder();
-        while (singleDataBuilder.length() < bytes )
+        while (singleDataBuilder.length() < singleDataSize)
         {
             singleDataBuilder.append(dataItem);
         }
 
-        String sampleData = singleDataBuilder.toString();
+        String singleData = singleDataBuilder.toString();
+        Event singleEvent = EventBuilder.withBody(singleData, Charset.forName("UTF-8"));
 
-        LOGGER.info("start, sampleData: {}", sampleData);
+
+        List<Event> events = new ArrayList<Event>();
+
+        for (int bb = 0; bb < batchSize; bb++)
+            events.add(singleEvent);
+
+
+        LOGGER.info("start, singleDataSize: {}", singleData.length());
 
         MyRpcClientFacade client = new MyRpcClientFacade();
         // Initialize client with the remote Flume agent's host and port
@@ -82,9 +93,14 @@ public class MyApp
 
         long startTime = System.currentTimeMillis();
         long previousTime = startTime;
-        for (int i = 0; i < num; i++)
+        long failNum = 0;
+        for (int i = 0; i < num; i+=batchSize)
         {
-            client.sendDataToFlume(sampleData);
+
+            if (!client.appendBatchEvent(events))
+            {
+                failNum+=batchSize;
+            }
 
             long curr = System.currentTimeMillis();
             if (curr - previousTime > logTimeInterval)
@@ -95,16 +111,52 @@ public class MyApp
         }
         long endTime = System.currentTimeMillis();
 
-        LOGGER.info("done total:  {}", endTime - startTime);
-        //10 个 file 节点 133932ms 10000次
+        ObjectNode resultBuilder = new ObjectMapper().createObjectNode();
+
+        resultBuilder.put("time", endTime - startTime);
+        resultBuilder.put("fail", failNum);
+        resultBuilder.put("num", num);
+        resultBuilder.put("batchSize", batchSize);
+        resultBuilder.put("singleDataSize", singleDataSize);
+        resultBuilder.put("totalMB", (float)(singleDataSize*num) / 1000.0f / 1000.0f);
+
+        LOGGER.info("over: {}",resultBuilder.toString());
+
+
+
+        //10 个 file 节点 133932ms n=10000 b=1 s=25
 
         /*
-        1000*1000 9838
+        1 1000*1(s=1000) 9838
+        1 10000/100*10  1500
+        1 100000/
+
+        1 time: 4008, props:{"num":100000, "batchSize":500, "singleDataSize":100} 10m
+
+        1 time: 122916, props:{"num":100000, "batchSize":10, "singleDataSize":1000, "totalBytes":100000000}
+        1 time: 28183, props:{"num":100000, "batchSize":100, "singleDataSize":1000, }
+        1 time: 19278, props:{"num":100000, "batchSize":200, "singleDataSize":1000, "totalMB":100.0}
+        1 time: 16886, props:{"num":100000, "batchSize":300, "singleDataSize":1000, "totalMB":100.00}   b>300 网路因素可以忽略不计
+        1 time: 19000 props:{"num":100000, "batchSize":500, "singleDataSize":1000}
+        1 time: 18438  props:{"num":100000, "batchSize":1000, "singleDataSize":1000 }
+        */
 
 
-         */
 
         client.cleanUp();
     }
 
+    final static DecimalFormat df=new DecimalFormat(".##");
+
+    @Override
+    public String toString()
+    {
+
+        return "{" +
+                "\"num\":" + num +
+                ", \"batchSize\":" + batchSize +
+                ", \"singleDataSize\":" + singleDataSize +
+                ", \"totalMB\":" + df.format((float)(singleDataSize*num) / 1000.0f / 1000.0f) +
+                '}';
+    }
 }
