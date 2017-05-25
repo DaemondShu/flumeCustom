@@ -44,8 +44,8 @@
         <option value="$PROJECT_DIR$/MonkeyDClient/pom.xml" />
         <option value="$PROJECT_DIR$/source/flume-ng-core/pom.xml" />
         <option value="$PROJECT_DIR$/source/flume-ng-node/pom.xml" />
-        <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/apache-flume-1.7.0-src/flume-ng-core/pom.xml" />
+        <option value="$PROJECT_DIR$/MonkeyDMaster/pom.xml" />
       </list>
     </option>
   </component>

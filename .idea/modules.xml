@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/MonkeyD.iml" filepath="$PROJECT_DIR$/MonkeyD.iml" />
       <module fileurl="file://$PROJECT_DIR$/MonkeyDAgent/MonkeyDAgent.iml" filepath="$PROJECT_DIR$/MonkeyDAgent/MonkeyDAgent.iml" />
       <module fileurl="file://$PROJECT_DIR$/MonkeyDClient/MonkeyDClient.iml" filepath="$PROJECT_DIR$/MonkeyDClient/MonkeyDClient.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MonkeyDFlume.iml" filepath="$PROJECT_DIR$/MonkeyDFlume.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MonkeyDMaster/MonkeyDMaster.iml" filepath="$PROJECT_DIR$/MonkeyDMaster/MonkeyDMaster.iml" />
       <module fileurl="file://$PROJECT_DIR$/apache-flume-1.7.0-bin/apache-flume-1.7.0-bin.iml" filepath="$PROJECT_DIR$/apache-flume-1.7.0-bin/apache-flume-1.7.0-bin.iml" />
       <module fileurl="file://$PROJECT_DIR$/apache-flume-1.7.0-src/flume-ng-core/flume-ng-core.iml" filepath="$PROJECT_DIR$/apache-flume-1.7.0-src/flume-ng-core/flume-ng-core.iml" />
     </modules>

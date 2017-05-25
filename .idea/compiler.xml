@@ -16,6 +16,7 @@
       <module name="MonkeyD" target="1.5" />
       <module name="MonkeyDAgent" target="1.8" />
       <module name="MonkeyDClient" target="1.8" />
+      <module name="MonkeyDMaster" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
