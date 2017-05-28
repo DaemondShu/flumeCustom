@@ -135,5 +135,21 @@ public class ApplicationTest
 
     }
 
+    @Test
+    public void path() throws Exception
+    {
+        System.out.println(Thread.currentThread().getContextClassLoader().getResource("").getPath());
+
+    }
+
+
+
+    @Test
+    public void agentConfig() throws Exception
+    {
+        ServerController temp = new ServerController();
+        temp.loadAgentsConfig("");
+
+    }
 
 }

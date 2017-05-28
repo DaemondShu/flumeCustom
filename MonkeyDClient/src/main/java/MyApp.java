@@ -1,24 +1,24 @@
 /**
  * Created by monkey_d_asce on 17-5-11.
- *
  */
-
 
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 
+import com.sun.corba.se.spi.ior.ObjectId;
 import org.apache.flume.Event;
 import org.apache.flume.event.EventBuilder;
-import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.NetworkInterface;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 
@@ -27,11 +27,11 @@ public class MyApp
     private static final Logger LOGGER = LoggerFactory.getLogger(MyApp.class);
 
 
-    @Parameter(names = {"-n", "--num"} )
+    @Parameter(names = {"-n", "--num"})
     int num = 10000;
 
     @Parameter(names = {"-b", "--batchSize"})   //batch batchSize
-    int batchSize = 100;
+            int batchSize = 100;
 
     @Parameter(names = {"-s", "--singleDataSize"})
     int singleDataSize = 10;
@@ -39,18 +39,61 @@ public class MyApp
     @Parameter(names = {"-d", "--dataItem"})
     String dataItem = "102,110,130,140,qqq,789\n";
 
-    @Parameter(names = { "-h" ,"--help"} , help = true)
+    @Parameter(names = {"-h", "--help"}, help = true)
     boolean help = false;
 
     @Parameter(names = {"-t", "--timeIntervalms"})
     long logTimeInterval = 5000;  //5s
 
 
+    private static final int clientId;
+
+    static
+    {
+        try
+        {
+            final int machinePiece;
+            {
+                StringBuilder sb = new StringBuilder();
+                Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
+                while (e.hasMoreElements())
+                {
+                    NetworkInterface ni = e.nextElement();
+                    sb.append(ni.toString());
+                }
+                machinePiece = sb.toString().hashCode() << 16;
+                LOGGER.info("machine piece post: " + Integer.toHexString(machinePiece));
+            }
+            final int processPiece;
+            {
+                int processId = new java.util.Random().nextInt();
+                try
+                {
+                    processId = java.lang.management.ManagementFactory.getRuntimeMXBean().getName().hashCode();
+                } catch (Throwable t)
+                {
+                }
+                ClassLoader loader = ObjectId.class.getClassLoader();
+                int loaderId = loader != null ? System.identityHashCode(loader) : 0;
+                StringBuilder sb = new StringBuilder();
+                sb.append(Integer.toHexString(processId));
+                sb.append(Integer.toHexString(loaderId));
+                processPiece = sb.toString().hashCode() & 0xFFFF;
+                LOGGER.info("process piece: " + Integer.toHexString(processPiece));
+            }
+            clientId = machinePiece | processPiece;
+            LOGGER.info("machine : " + Integer.toHexString(clientId));
+        } catch (java.io.IOException ioe)
+        {
+            throw new RuntimeException(ioe);
+        }
+    }
+
 
     public static void main(String[] args)
     {
         MyApp myApp = new MyApp();
-        JCommander commandParser =  JCommander.newBuilder().addObject(myApp).build();
+        JCommander commandParser = JCommander.newBuilder().addObject(myApp).build();
         commandParser.parse(args);
         if (myApp.help)
         {
@@ -64,7 +107,6 @@ public class MyApp
 
     public void run()
     {
-
 
 
         // Send 10 events to the remote Flume agent. That agent should be
@@ -94,12 +136,12 @@ public class MyApp
         long startTime = System.currentTimeMillis();
         long previousTime = startTime;
         long failNum = 0;
-        for (int i = 0; i < num; i+=batchSize)
+        for (int i = 0; i < num; i += batchSize)
         {
 
             if (!client.appendBatchEvent(events))
             {
-                failNum+=batchSize;
+                failNum += batchSize;
             }
 
             long curr = System.currentTimeMillis();
@@ -118,10 +160,9 @@ public class MyApp
         resultBuilder.put("num", num);
         resultBuilder.put("batchSize", batchSize);
         resultBuilder.put("singleDataSize", singleDataSize);
-        resultBuilder.put("totalMB", (float)(singleDataSize*num) / 1000.0f / 1000.0f);
+        resultBuilder.put("totalMB", (float) (singleDataSize * num) / 1000.0f / 1000.0f);
 
-        LOGGER.info("over: {}",resultBuilder.toString());
-
+        LOGGER.info("over: {}", resultBuilder.toString());
 
 
         //10 个 file 节点 133932ms n=10000 b=1 s=25
@@ -142,11 +183,10 @@ public class MyApp
         */
 
 
-
         client.cleanUp();
     }
 
-    final static DecimalFormat df=new DecimalFormat(".##");
+    final static DecimalFormat df = new DecimalFormat(".##");
 
     @Override
     public String toString()
@@ -156,7 +196,7 @@ public class MyApp
                 "\"num\":" + num +
                 ", \"batchSize\":" + batchSize +
                 ", \"singleDataSize\":" + singleDataSize +
-                ", \"totalMB\":" + df.format((float)(singleDataSize*num) / 1000.0f / 1000.0f) +
+                ", \"totalMB\":" + df.format((float) (singleDataSize * num) / 1000.0f / 1000.0f) +
                 '}';
     }
 }
