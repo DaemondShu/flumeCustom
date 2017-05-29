@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
-import org.springframework.web.servlet.mvc.condition.ParamsRequestCondition;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.Serializable;
@@ -29,8 +28,8 @@ public class Agent implements Serializable
         this.ip = ip;
         this.sourcePort = sourcePort;
         this.monitorPort = monitorPort;
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString("http://" + ip + ":"  + sourcePort + "/metrics");
-        this.uri = builder.build().toUri();
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString("http://" + ip + ":"  + monitorPort + "/metrics");
+        this.monitorUri = builder.build().toUri();
     }
 
     @JsonProperty("ip")
@@ -74,10 +73,24 @@ public class Agent implements Serializable
 
 
     @JsonIgnore
-    private URI uri;
+    private URI monitorUri;
 
-    public URI getUri()
+    public URI getMonitorUri()
     {
-        return uri;
+        return monitorUri;
+    }
+
+    @JsonIgnore
+    private Integer capacity;
+
+
+    public Integer getCapacity()
+    {
+        return capacity;
+    }
+
+    public void setCapacity(Integer capacity)
+    {
+        this.capacity = capacity;
     }
 }

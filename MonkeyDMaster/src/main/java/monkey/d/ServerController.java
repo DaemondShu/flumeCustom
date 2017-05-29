@@ -1,34 +1,24 @@
 package monkey.d;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import org.apache.catalina.mapper.Mapper;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.PeriodicTrigger;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by monkey_d_asce on 17-5-26.
@@ -40,10 +30,15 @@ public class ServerController
     ObjectMapper objectMapper = new ObjectMapper();
     static final String CONFIG_SOURCE_PORT = "source_port";
     static final String CONFIG_MONITOR_PORT = "monitor_port";
+    static RestTemplate restTemplate = new RestTemplate();
     List<Agent> agentList = null;
 
     Integer CapacitySum = 0;
+    Integer[] capacityList = null;
+    Random r = new java.util.Random();
 
+
+    Lock updateAgentlock = new ReentrantLock();
 
     ConcurrentMap<Integer, Integer> clientsCount = new ConcurrentHashMap<>();
 
@@ -83,8 +78,6 @@ public class ServerController
             //
             //
             //            logger.debug(agentProps.getProperty("num", "555"));
-
-
             String path = Class.class.getClass().getResource("/").getPath() + "agents.json";
             logger.info("path:" + path);
 
@@ -93,20 +86,15 @@ public class ServerController
         {
             loadAgentsConfig(objectMapper.readTree(agentConfigStr));
         }
-
     }
 
-    protected void loadAgentsConfig(JsonNode agentConfigJson) throws Exception
+
+    void loadAgentsConfig(JsonNode agentConfigJson) throws Exception
     {
         final String CONFIG_AGENTS = "agents";
 
         ArrayNode agents = (ArrayNode) agentConfigJson.get(CONFIG_AGENTS);
         logger.info("json:" + agents.toString());
-
-        Agent agent = objectMapper.convertValue(agents.get(0), Agent.class);
-
-        logger.info("json:" + agent.toString());
-
 
         agentList = objectMapper.convertValue(agents, objectMapper.getTypeFactory().constructCollectionType(ArrayList.class, Agent.class));
 
@@ -116,14 +104,12 @@ public class ServerController
         {
             throw new Exception("bad list");
         }
-
-
     }
 
 
 
     @RequestMapping("/startCron")
-    public String startCron(@RequestParam(value = "time", required = false, defaultValue = "3000") Integer gap, @RequestParam(value = "agents", required = false) String agentConfigStr)
+    public String startCron(@RequestParam(value = "time", required = false, defaultValue = "1000") Integer gap, @RequestParam(value = "agents", required = false) String agentConfigStr)
     {
 
         try
@@ -147,31 +133,60 @@ public class ServerController
 
     //不会出现cleintId同时掉用的情况
     @RequestMapping("/roundRobin")
-    public String roundRobin(@RequestParam(value = "clientId", required = true) Integer ClientId) throws JsonProcessingException
+    public Integer roundRobin(@RequestParam(value = "clientId", required = true) Integer ClientId) throws JsonProcessingException
     {
-        if (!clientsCount.containsKey(ClientId))
-        {
-            clientsCount.put(ClientId, 0);
-        }
 
         Integer count = clientsCount.get(ClientId);
         if (count == null)
             count = 0;
-        count = (count + 1) % agentList.size();
+        else
+        {
+            count = (count + 1) % agentList.size();
+        }
+
         clientsCount.put(ClientId, count);
-        return objectMapper.writeValueAsString(agentList.get(count));
+        return count;
     }
 
 
-    @RequestMapping("/hashMap")
-    public String hashMap()
+    @RequestMapping("/consistHash")
+    public Integer consistHash() throws Exception
     {
-        if (future != null)
+//        ObjectNode objectNode = objectMapper.createObjectNode();
+//        objectNode.put("ok","ssss");
+        //return objectNode;
+        if (CapacitySum <=0)
+            throw new Exception("no capacity");
+        try
         {
-            future.cancel(true);
+            updateAgentlock.lock();
+            int hashcode = r.nextInt(CapacitySum);
+
+            for (int i =0; i< capacityList.length; i++)
+            {
+                hashcode -= capacityList[i];
+                if (hashcode < 0)
+                    return i;
+            }
         }
-        System.out.println("DynamicTask.stopCron()");
-        return "stopCron";
+        catch (Throwable e)
+        {
+            logger.error(e.getMessage());
+        }
+        finally
+        {
+            updateAgentlock.unlock();
+        }
+
+        //return 0;
+
+        throw new Exception("should not happen");
+    }
+
+    @RequestMapping("/agentList")
+    public List<Agent> agentList() throws Exception
+    {
+        return agentList;
     }
 
 
@@ -195,18 +210,61 @@ public class ServerController
         {
             try
             {
-                //update info
-                for (Agent agent : agentList)
-                {
-                    logger.debug(agent.getUri().toString());
-                }
-
                 logger.debug("DynamicTask.MyRunnable.run() start");
+                Integer tempSumSize = 0;
+                Integer[] tempCapacityList = new Integer[agentList.size()];
+                //update info
+                for (int i=0; i< agentList.size(); i++)
+                {
+                    Agent agent = agentList.get(i);
+
+                    Integer channelCapacityRemain = 0;
+                    try
+                    {
+                        logger.debug(agent.getMonitorUri().toString());
+                        JsonNode monitorInfo = restTemplate.getForObject(agent.getMonitorUri(), JsonNode.class);
+                        logger.debug(monitorInfo);
+                        Iterator<Map.Entry<String, JsonNode>> iter = monitorInfo.fields();
+                        while (iter.hasNext())
+                        {
+                            Map.Entry<String, JsonNode> item = iter.next();
+                            String key = item.getKey();
+                            if (key.contains("mem"))
+                            {
+                                JsonNode menMonitor = item.getValue();
+                                Integer channelCapacity = menMonitor.get("ChannelCapacity").asInt();
+                                Integer channelSize = menMonitor.get("ChannelSize").asInt();
+                                channelCapacityRemain = channelCapacity - channelSize;
+                                break;
+                                //logger.debug(channelCapacity);
+                                //logger.debug(channelSize);
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        logger.error(agent.toString() + e.getMessage());
+                    }
+                    finally
+                    {
+
+                        //agent.setCapacity(channelCapacityRemain);
+                        tempSumSize += channelCapacityRemain;
+                        tempCapacityList[i] = channelCapacityRemain;
+                    }
+                }
+                //多鲜橙
+                updateAgentlock.lock();
+                CapacitySum = tempSumSize;
+                capacityList = tempCapacityList;
+                updateAgentlock.unlock();
+
+
                 Thread.sleep(5000);
                 logger.debug("DynamicTask.MyRunnable.run() end");
             } catch (Exception e)
             {
-
+                logger.error(e);
             }
 
         }

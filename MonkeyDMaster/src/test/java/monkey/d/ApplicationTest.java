@@ -145,11 +145,8 @@ public class ApplicationTest
 
 
     @Test
-    public void agentConfig() throws Exception
+    public void accessAgent() throws Exception
     {
-        ServerController temp = new ServerController();
-        temp.loadAgentsConfig("");
-
     }
 
 }

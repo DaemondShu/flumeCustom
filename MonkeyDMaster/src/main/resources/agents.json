@@ -2,8 +2,8 @@
   "num": 1,
   "agents" : [
     {
-      "source_port" : 44446,
-      "monitor_port" : 44447,
+      "source_port" : 44444,
+      "monitor_port" : 44445,
       "ip": "localhost"
     },
     {
