@@ -80,17 +80,17 @@ public class Agent implements Serializable
         return monitorUri;
     }
 
-    @JsonIgnore
-    private Integer capacity;
-
-
-    public Integer getCapacity()
-    {
-        return capacity;
-    }
-
-    public void setCapacity(Integer capacity)
-    {
-        this.capacity = capacity;
-    }
+//    @JsonIgnore
+//    private Integer capacity;
+//
+//
+//    public Integer getCapacity()
+//    {
+//        return capacity;
+//    }
+//
+//    public void setCapacity(Integer capacity)
+//    {
+//        this.capacity = capacity;
+//    }
 }

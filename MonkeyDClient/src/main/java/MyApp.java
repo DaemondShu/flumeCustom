@@ -6,6 +6,7 @@
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sun.corba.se.spi.ior.ObjectId;
 import org.apache.flume.Event;
 import org.apache.flume.event.EventBuilder;
@@ -28,7 +29,7 @@ public class MyApp
 
 
     @Parameter(names = {"-n", "--num"})
-    int num = 10000;
+    int num = 100000;
 
     @Parameter(names = {"-b", "--batchSize"})   //batch batchSize
             int batchSize = 100;
@@ -45,6 +46,17 @@ public class MyApp
     @Parameter(names = {"-t", "--timeIntervalms"})
     long logTimeInterval = 5000;  //5s
 
+    @Parameter(names = {"-m", "--masterIp"})
+    String masterIp = "localhost";  //5s
+
+    @Parameter(names = {"-p", "--masterPort"})
+    int masterPort = 40999;  //5s
+
+    @Parameter(names = {"-i", "--interval"})
+    int interval = 50;
+
+    @Parameter(names = {"-l", "--loadBalance"})
+    String loadBalance = "consistHash";
 
     private static final int clientId;
 
@@ -90,7 +102,7 @@ public class MyApp
     }
 
 
-    public static void main(String[] args)
+    public static void main(String[] args) throws JsonProcessingException
     {
         MyApp myApp = new MyApp();
         JCommander commandParser = JCommander.newBuilder().addObject(myApp).build();
@@ -105,7 +117,7 @@ public class MyApp
     }
 
 
-    public void run()
+    public void run() throws JsonProcessingException
     {
 
 
@@ -131,7 +143,7 @@ public class MyApp
 
         MyRpcClientFacade client = new MyRpcClientFacade();
         // Initialize client with the remote Flume agent's host and port
-        client.init("localhost", 44444);
+        client.init(masterIp, masterPort, interval, loadBalance);
 
         long startTime = System.currentTimeMillis();
         long previousTime = startTime;
