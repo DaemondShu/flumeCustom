@@ -22,6 +22,7 @@ package org.apache.flume.source;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.sun.corba.se.spi.ior.ObjectId;
 import org.apache.avro.ipc.NettyServer;
 import org.apache.avro.ipc.NettyTransceiver;
 import org.apache.avro.ipc.Responder;
@@ -58,17 +59,15 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import java.io.FileInputStream;
 import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
 import java.security.KeyStore;
 import java.security.Security;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import static org.apache.flume.instrumentation.MyHTTPMetricsServer.portInfo;
 
 public class MyAvroSource extends AbstractSource implements EventDrivenSource,
         Configurable, AvroSourceProtocol
@@ -111,6 +110,8 @@ public class MyAvroSource extends AbstractSource implements EventDrivenSource,
     private ScheduledExecutorService connectionCountUpdater;
 
     private List<IpFilterRule> rules;
+
+
 
     @Override
     public void configure(Context context)
@@ -203,6 +204,10 @@ public class MyAvroSource extends AbstractSource implements EventDrivenSource,
         NioServerSocketChannelFactory socketChannelFactory = initSocketChannelFactory();
 
         ChannelPipelineFactory pipelineFactory = initChannelPipelineFactory();
+
+        //RUA
+        if (portInfo.has("source_port"))
+            port = portInfo.get("source_port").asInt();
 
         server = new NettyServer(responder, new InetSocketAddress(bindAddress, port),
                 socketChannelFactory, pipelineFactory, null);
@@ -369,7 +374,7 @@ public class MyAvroSource extends AbstractSource implements EventDrivenSource,
     {
 //        logger.debug("Avro source {}: Received avro event batch of {} events.",
 //                getName(), events.size());
-        logger.info("get events: " + events.size());
+        //logger.info("get events: " + events.size());
         sourceCounter.incrementAppendBatchReceivedCount();
         sourceCounter.addToEventReceivedCount(events.size());
 

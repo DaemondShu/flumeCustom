@@ -56,17 +56,32 @@ over: {"time":25879,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100
 2017-06-01 05:49:52  INFO MyApp:177 - over: {"time":109538,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
 16978100
 4964483300
-
 ```
+
 
 ####fakerolling 50000
 ```$xslt
 
+2017-06-01 11:08:54  INFO MyApp:180 - done over: {"time":32936,"fail":0,"num":10000000,"batchSize":300,
+"singleDataSize":100,"totalMB":1000.0}
 
-2017-06-01 09:53:44  INFO MyApp:180 - over: {"time":143325,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
-2017-06-01 09:53:46  INFO MyApp:180 - over: {"time":145122,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
-2017-06-01 09:53:47  INFO MyApp:180 - over: {"time":146778,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
-2017-06-01 09:53:48  INFO MyApp:180 - over: {"time":147502,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 11:13:19  INFO MyApp:180 - done over: {"time":83576,"fail":0,"num":10000000,"batchSize":300,
+"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 11:13:22  INFO MyApp:180 - done over: {"time":82364,"fail":0,"num":10000000,"batchSize":300,
+"singleDataSize":100,"totalMB":1000.0}
+
+
+
+2017-06-01 09:53:44  INFO MyApp:180 - over: {"time":173325,"fail":0,"num":10000000,"batchSize":300,
+"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 09:53:46  INFO MyApp:180 - over: {"time":175122,"fail":0,"num":10000000,"batchSize":300,
+"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 09:53:47  INFO MyApp:180 - over: {"time":177778,"fail":0,"num":10000000,"batchSize":300,
+"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 09:53:48  INFO MyApp:180 - over: {"time":177502,"fail":0,"num":10000000,"batchSize":300,
+"singleDataSize":100,"totalMB":1000.0}
+
+
 
 
 ```
@@ -111,7 +126,7 @@ connect restart:2
 
 ```
 重连数 3734
-2017-06-01 10:32:18  INFO MyApp:180 - over: {"time":28976,"fail":0,"num":10000000,"batchSize":300,
+2017-06-01 10:32:18  INFO MyApp:180 - over: {"time":29759,"fail":0,"num":10000000,"batchSize":300,
 "singleDataSize":100,"totalMB":1000.0}
 
 重连数 14667
@@ -119,21 +134,20 @@ connect restart:2
 2017-06-01 10:32:18  INFO MyApp:180 - over: {"time":80815,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
 
 重连数 21333*4
-2017-06-01 10:40:05  INFO MyApp:180 - done over: {"time":188747,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
-2017-06-01 10:40:06  INFO MyApp:180 - done over: {"time":189540,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
-2017-06-01 10:40:06  INFO MyApp:180 - done over: {"time":189652,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
-2017-06-01 10:40:06  INFO MyApp:180 - done over: {"time":189792,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 12:00:20  INFO MyApp:180 - done over: {"time":195118,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 12:00:22  INFO MyApp:180 - done over: {"time":197128,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 12:00:22  INFO MyApp:180 - done over: {"time":197267,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 12:00:22  INFO MyApp:180 - done over: {"time":197419,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+
 
 重连数 22170*8
-2017-06-01 10:49:28  INFO MyApp:180 - done over: {"time":361896,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
-2017-06-01 10:49:29  INFO MyApp:180 - done over: {"time":362603,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
-2017-06-01 10:49:29  INFO MyApp:180 - done over: {"time":363519,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
-2017-06-01 10:49:30  INFO MyApp:180 - done over: {"time":364915,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
-2017-06-01 10:49:31  INFO MyApp:180 - done over: {"time":364425,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
-2017-06-01 10:49:33  INFO MyApp:180 - done over: {"time":366615,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
-2017-06-01 10:49:33  INFO MyApp:180 - done over: {"time":366184,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
-2017-06-01 10:49:33  INFO MyApp:180 - done over: {"time":366978,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
-
+2017-06-01 12:08:53  INFO MyApp:180 - done over: {"time":373946,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 12:08:54  INFO MyApp:180 - done over: {"time":374339,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 12:08:55  INFO MyApp:180 - done over: {"time":375432,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 12:08:55  INFO MyApp:180 - done over: {"time":375844,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 12:08:55  INFO MyApp:180 - done over: {"time":376197,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 12:08:56  INFO MyApp:180 - done over: {"time":376335,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 12:08:56  INFO MyApp:180 - done over: {"time":376519,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
 
 
 ```

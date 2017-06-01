@@ -197,7 +197,7 @@ class MyRpcClientFacade
     public void cleanUp() throws JsonProcessingException
     {
         // Close the RPC connection
-        logger.info("counts:"+  new ObjectMapper().writeValueAsString(clientsCounter) + "connect restart:" + failCount);
+        logger.info("done counts:"+  new ObjectMapper().writeValueAsString(clientsCounter) + "connect restart:" + failCount);
 
         service.shutdown();
         if (sourceClients != null)

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
@@ -31,7 +32,7 @@ public class ServerController
     static final String CONFIG_SOURCE_PORT = "source_port";
     static final String CONFIG_MONITOR_PORT = "monitor_port";
     static RestTemplate restTemplate = new RestTemplate();
-    List<Agent> agentList = null;
+    List<Agent> agentList = new ArrayList<>();
 
     Integer CapacitySum = 0;
     Integer[] capacityList = null;
@@ -113,18 +114,60 @@ public class ServerController
     {
         try
         {
-            loadAgentsConfig(agentConfigStr);
+            //loadAgentsConfig(agentConfigStr);
+            updateAgentlock.lock();
             stopCron();// 先停止，在开启.
             logger.info("gap=" + gap);
             PeriodicTrigger periodicTrigger = new PeriodicTrigger(gap, TimeUnit.MILLISECONDS);
             periodicTrigger.setFixedRate(true);
+            while (future != null && !future.isCancelled())
+                future.cancel(true);
+
+
+            List<Agent> tempList = new ArrayList<>();
+            for (int i=0; i< agentList.size(); i++)
+            {
+                Agent agent = agentList.get(i);
+
+                Integer channelCapacityRemain = 0;
+                try
+                {
+                    logger.debug(agent.getMonitorUri().toString());
+                    JsonNode monitorInfo = restTemplate.getForObject(agent.getMonitorUri(), JsonNode.class);
+                    logger.debug(monitorInfo);
+                    Iterator<Map.Entry<String, JsonNode>> iter = monitorInfo.fields();
+                    while (iter.hasNext())
+                    {
+                        Map.Entry<String, JsonNode> item = iter.next();
+                        String key = item.getKey();
+                        if (key.contains("mem"))
+                        {
+                            tempList.add(agent);
+                            break;
+                            //logger.debug(channelCapacity);
+                            //logger.debug(channelSize);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    logger.debug(agent.toString() + e.getMessage());
+                }
+            }
+            agentList = tempList;
+
+
             future = threadPoolTaskScheduler.schedule(new MyRunnable(), periodicTrigger);
+
             logger.info("startCron");
             return objectMapper.writeValueAsString(agentList);
         } catch (Exception e)
         {
             logger.error("error", e);
             return e.getMessage();
+        }finally
+        {
+            updateAgentlock.unlock();
         }
     }
 
@@ -208,6 +251,22 @@ public class ServerController
         return "stopCron";
     }
 
+    int source_port_iter = 44444;
+    int monitor_port_iter = 55555;
+
+    @RequestMapping("/getPort")
+    public synchronized Agent  getPort(@RequestParam(value = "agentId", required = true) Integer agentId, HttpServletRequest request) throws JsonProcessingException
+    {
+        logger.info("getPort");
+        String ip = request.getRemoteAddr();
+        //TODO 这边其实是有问题的,发送方不能和master分开
+        Agent t = new Agent(ip,source_port_iter++,monitor_port_iter++);
+        agentList.add(t);
+        logger.info("new agent" + objectMapper.writeValueAsString(t));
+        return t;
+    }
+
+
 
     private class MyRunnable implements Runnable
     {
@@ -216,7 +275,6 @@ public class ServerController
         {
             try
             {
-                logger.debug("DynamicTask.MyRunnable.run() start");
                 Integer tempSumSize = 0;
                 Integer[] tempCapacityList = new Integer[agentList.size()];
                 //update info
@@ -241,6 +299,7 @@ public class ServerController
                                 Integer channelCapacity = menMonitor.get("ChannelCapacity").asInt();
                                 Integer channelSize = menMonitor.get("ChannelSize").asInt();
                                 channelCapacityRemain = channelCapacity - channelSize;
+                                if (channelCapacityRemain <=0) channelCapacityRemain = 1;
                                 break;
                                 //logger.debug(channelCapacity);
                                 //logger.debug(channelSize);
@@ -255,7 +314,6 @@ public class ServerController
                     {
 
                         //agent.setCapacity(channelCapacityRemain);
-                        if (channelCapacityRemain <=0) channelCapacityRemain = 1;
                         tempSumSize += channelCapacityRemain;
                         tempCapacityList[i] = channelCapacityRemain;
                     }
@@ -266,7 +324,7 @@ public class ServerController
                 capacityList = tempCapacityList;
                 updateAgentlock.unlock();
 
-                //logger.debug("DynamicTask.MyRunnable.run() end");
+
             } catch (Exception e)
             {
                 logger.debug(e);

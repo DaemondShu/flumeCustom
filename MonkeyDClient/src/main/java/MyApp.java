@@ -38,7 +38,7 @@ public class MyApp
     int singleDataSize = 25;
 
     @Parameter(names = {"-d", "--dataItem"})
-    String dataItem = "102,110,130,140,qqq,78910";
+    String dataItem = "102,110,13";
 
     @Parameter(names = {"-h", "--help"}, help = true)
     boolean help = false;
@@ -94,10 +94,10 @@ public class MyApp
                 sb.append(Integer.toHexString(processId));
                 sb.append(Integer.toHexString(loaderId));
                 processPiece = sb.toString().hashCode() & 0xFFFF;
-                LOGGER.info("process piece: " + Integer.toHexString(processPiece));
+                //LOGGER.info("process piece: " + Integer.toHexString(processPiece));
             }
             clientId = machinePiece | processPiece;
-            LOGGER.info("machine : " + Integer.toHexString(clientId));
+            LOGGER.info("machine Id: " + Integer.toHexString(clientId));
         } catch (java.io.IOException ioe)
         {
             throw new RuntimeException(ioe);
