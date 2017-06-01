@@ -369,6 +369,7 @@ public class MyAvroSource extends AbstractSource implements EventDrivenSource,
     {
 //        logger.debug("Avro source {}: Received avro event batch of {} events.",
 //                getName(), events.size());
+        logger.info("get events: " + events.size());
         sourceCounter.incrementAppendBatchReceivedCount();
         sourceCounter.addToEventReceivedCount(events.size());
 
@@ -387,8 +388,9 @@ public class MyAvroSource extends AbstractSource implements EventDrivenSource,
             getChannelProcessor().processEventBatch(batch);
         } catch (Throwable t)
         {
+            //if (System.currentTimeMillis() % )
             logger.error("Avro source " + getName() + ": Unable to process event " +
-                    "batch. Exception follows.", t);
+                    "batch. Exception follows.", t.getMessage());
             if (t instanceof Error)
             {
                 throw (Error) t;

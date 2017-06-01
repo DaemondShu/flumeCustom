@@ -29,16 +29,16 @@ public class MyApp
 
 
     @Parameter(names = {"-n", "--num"})
-    int num = 100000;
+    int num = 10000;
 
     @Parameter(names = {"-b", "--batchSize"})   //batch batchSize
             int batchSize = 100;
 
     @Parameter(names = {"-s", "--singleDataSize"})
-    int singleDataSize = 10;
+    int singleDataSize = 25;
 
     @Parameter(names = {"-d", "--dataItem"})
-    String dataItem = "102,110,130,140,qqq,789\n";
+    String dataItem = "102,110,130,140,qqq,78910";
 
     @Parameter(names = {"-h", "--help"}, help = true)
     boolean help = false;
@@ -58,7 +58,10 @@ public class MyApp
     @Parameter(names = {"-l", "--loadBalance"})
     String loadBalance = "consistHash";
 
-    private static final int clientId;
+    @Parameter(names = {"-a", "--attemptTimes"})
+    Integer attemptTimes = 3;
+
+    public static final int clientId;
 
     static
     {
@@ -102,7 +105,7 @@ public class MyApp
     }
 
 
-    public static void main(String[] args) throws JsonProcessingException
+    public static void main(String[] args) throws Exception
     {
         MyApp myApp = new MyApp();
         JCommander commandParser = JCommander.newBuilder().addObject(myApp).build();
@@ -117,7 +120,7 @@ public class MyApp
     }
 
 
-    public void run() throws JsonProcessingException
+    public void run() throws JsonProcessingException, InterruptedException
     {
 
 
@@ -143,7 +146,7 @@ public class MyApp
 
         MyRpcClientFacade client = new MyRpcClientFacade();
         // Initialize client with the remote Flume agent's host and port
-        client.init(masterIp, masterPort, interval, loadBalance);
+        client.init(masterIp, masterPort, interval, loadBalance, attemptTimes);
 
         long startTime = System.currentTimeMillis();
         long previousTime = startTime;
@@ -174,7 +177,7 @@ public class MyApp
         resultBuilder.put("singleDataSize", singleDataSize);
         resultBuilder.put("totalMB", (float) (singleDataSize * num) / 1000.0f / 1000.0f);
 
-        LOGGER.info("over: {}", resultBuilder.toString());
+        LOGGER.info("done over: {}", resultBuilder.toString());
 
 
         //10 个 file 节点 133932ms n=10000 b=1 s=25

@@ -78,7 +78,7 @@ public class ServerController
             //
             //
             //            logger.debug(agentProps.getProperty("num", "555"));
-            String path = Class.class.getClass().getResource("/").getPath() + "agents.json";
+            String path = System.getProperty("user.dir")+ File.separator+ "agents.json";
             logger.info("path:" + path);
 
             loadAgentsConfig(objectMapper.readTree(new File(path)));
@@ -111,7 +111,6 @@ public class ServerController
     @RequestMapping("/startCron")
     public String startCron(@RequestParam(value = "time", required = false, defaultValue = "1000") Integer gap, @RequestParam(value = "agents", required = false) String agentConfigStr)
     {
-
         try
         {
             loadAgentsConfig(agentConfigStr);
@@ -119,16 +118,16 @@ public class ServerController
             logger.info("gap=" + gap);
             PeriodicTrigger periodicTrigger = new PeriodicTrigger(gap, TimeUnit.MILLISECONDS);
             periodicTrigger.setFixedRate(true);
-
             future = threadPoolTaskScheduler.schedule(new MyRunnable(), periodicTrigger);
             logger.info("startCron");
-            return "startCron";
+            return objectMapper.writeValueAsString(agentList);
         } catch (Exception e)
         {
             logger.error("error", e);
             return e.getMessage();
         }
     }
+
 
 
     //不会出现cleintId同时掉用的情况
@@ -190,6 +189,13 @@ public class ServerController
     }
 
 
+    @RequestMapping("/capacityList")
+    public Integer[] capacityList() throws Exception
+    {
+        return capacityList;
+    }
+
+
     @RequestMapping("/stopCron")
     public String stopCron()
     {
@@ -243,12 +249,13 @@ public class ServerController
                     }
                     catch (Exception e)
                     {
-                        logger.error(agent.toString() + e.getMessage());
+                        logger.debug(agent.toString() + e.getMessage());
                     }
                     finally
                     {
 
                         //agent.setCapacity(channelCapacityRemain);
+                        if (channelCapacityRemain <=0) channelCapacityRemain = 1;
                         tempSumSize += channelCapacityRemain;
                         tempCapacityList[i] = channelCapacityRemain;
                     }
@@ -259,12 +266,10 @@ public class ServerController
                 capacityList = tempCapacityList;
                 updateAgentlock.unlock();
 
-
-                Thread.sleep(5000);
-                logger.debug("DynamicTask.MyRunnable.run() end");
+                //logger.debug("DynamicTask.MyRunnable.run() end");
             } catch (Exception e)
             {
-                logger.error(e);
+                logger.debug(e);
             }
 
         }

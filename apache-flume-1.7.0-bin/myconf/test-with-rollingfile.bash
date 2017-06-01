@@ -21,12 +21,17 @@ a1.sinks.k1.sink.directory = rollSinkData
 a1.sinks.k1.sink.pathManager.prefix = mem1-
 #a1.sinks.k1.batchSize = 10
 a1.sinks.k1.sink.rollInterval = 0
-#a1.sinks.k1.type = null
-#a1.sinks.k1.channel = mem1
-#a1.sinks.k1.batchSize = 1
 
-a1.sinks.k2.type = null
+
+a1.sinks.k2.type = file_roll
 a1.sinks.k2.channel = file1
+a1.sinks.k2.sink.directory = rollSinkData
+a1.sinks.k2.sink.pathManager.prefix = file1-
+#a1.sinks.k2.batchSize = 10
+a1.sinks.k2.sink.rollInterval = 0
+
+#a1.sinks.k2.type = null
+#a1.sinks.k2.channel = file1
 
 # channel selector
 

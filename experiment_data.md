@@ -25,3 +25,117 @@ time: 18438  props:{"num":100000, "batchSize":1000, "singleDataSize":1000 }
 {"time":1624,"fail":0,"num":100000,"batchSize":300,"singleDataSize":1000,"totalMB":100.0}
 {"time":3401,"fail":0,"num":100000,"batchSize":300,"singleDataSize":10000,"totalMB":1000.0}
 ```
+## true
+
+### singlefile + memory
+####true
+```$xslt
+over: {"time":22337,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+
+
+over: {"time":25460,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+over: {"time":25879,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+
+
+2017-06-01 08:08:42  INFO MyApp:180 - over: {"time":37946,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 08:08:43  INFO MyApp:180 - over: {"time":39018,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 08:08:48  INFO MyApp:180 - over: {"time":43360,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 08:08:50  INFO MyApp:180 - over: {"time":45401,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+占用率
+5423700 
+7064717700
+0.007
+
+2017-06-01 05:49:23  INFO MyApp:177 - over: {"time":79928,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 05:49:31  INFO MyApp:177 - over: {"time":88239,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 05:49:35  INFO MyApp:177 - over: {"time":91694,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 05:49:45  INFO MyApp:177 - over: {"time":102044,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 05:49:50  INFO MyApp:177 - over: {"time":106782,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 05:49:50  INFO MyApp:177 - over: {"time":106927,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 05:49:50  INFO MyApp:177 - over: {"time":107603,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 05:49:52  INFO MyApp:177 - over: {"time":109538,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+16978100
+4964483300
+
+```
+
+####fakerolling 50000
+```$xslt
+
+
+2017-06-01 09:53:44  INFO MyApp:180 - over: {"time":143325,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 09:53:46  INFO MyApp:180 - over: {"time":145122,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 09:53:47  INFO MyApp:180 - over: {"time":146778,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 09:53:48  INFO MyApp:180 - over: {"time":147502,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+
+
+```
+
+
+
+### single memory
+
+```$xslt
+2017-06-01 07:55:40  INFO MyApp:180 - over: {"time":22119,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+connect restart:2
+
+
+2017-06-01 07:57:32  INFO MyApp:180 - over: {"time":38463,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 07:57:32  INFO MyRpcClientFacade:195 - counts:[21944,17260]connect restart:2
+2017-06-01 07:57:32  INFO MyApp:180 - over: {"time":38581,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 07:57:32  INFO MyRpcClientFacade:195 - counts:[22710,15972]connect restart:2
+2017-06-01 07:57:32  INFO MyApp:180 - over: {"time":38659,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 07:57:32  INFO MyRpcClientFacade:195 - counts:[21252,17765]connect restart:2
+2017-06-01 07:57:33  INFO MyApp:180 - over: {"time":38904,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 07:57:33  INFO MyRpcClientFacade:195 - counts:[22419,16275]connect restart:2
+
+2017-06-01 08:02:58  INFO MyApp:180 - over: {"time":68304,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 08:02:58  INFO MyRpcClientFacade:195 - counts:[21295,19906]connect restart:2
+2017-06-01 08:02:59  INFO MyApp:180 - over: {"time":68739,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 08:02:59  INFO MyRpcClientFacade:195 - counts:[22279,19242]connect restart:2
+2017-06-01 08:02:59  INFO MyApp:180 - over: {"time":68892,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 08:02:59  INFO MyRpcClientFacade:195 - counts:[20670,19884]connect restart:2
+2017-06-01 08:02:59  INFO MyApp:180 - over: {"time":69232,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 08:02:59  INFO MyApp:180 - over: {"time":69469,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 08:02:59  INFO MyRpcClientFacade:195 - counts:[21778,18792]connect restart:2
+2017-06-01 08:02:59  INFO MyRpcClientFacade:195 - counts:[21746,19646]connect restart:2
+2017-06-01 08:02:59  INFO MyApp:180 - over: {"time":69367,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 08:02:59  INFO MyRpcClientFacade:195 - counts:[21782,19993]connect restart:2
+2017-06-01 08:02:59  INFO MyApp:180 - over: {"time":69527,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 08:02:59  INFO MyRpcClientFacade:195 - counts:[21714,19639]connect restart:2
+2017-06-01 08:02:59  INFO MyApp:180 - over: {"time":69767,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 08:02:59  INFO MyRpcClientFacade:195 - counts:[21227,20173]connect restart:2
+
+```
+####fakerolling 50000
+
+```
+重连数 3734
+2017-06-01 10:32:18  INFO MyApp:180 - over: {"time":28976,"fail":0,"num":10000000,"batchSize":300,
+"singleDataSize":100,"totalMB":1000.0}
+
+重连数 14667
+2017-06-01 10:32:18  INFO MyApp:180 - over: {"time":80769,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 10:32:18  INFO MyApp:180 - over: {"time":80815,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+
+重连数 21333*4
+2017-06-01 10:40:05  INFO MyApp:180 - done over: {"time":188747,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 10:40:06  INFO MyApp:180 - done over: {"time":189540,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 10:40:06  INFO MyApp:180 - done over: {"time":189652,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 10:40:06  INFO MyApp:180 - done over: {"time":189792,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+
+重连数 22170*8
+2017-06-01 10:49:28  INFO MyApp:180 - done over: {"time":361896,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 10:49:29  INFO MyApp:180 - done over: {"time":362603,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 10:49:29  INFO MyApp:180 - done over: {"time":363519,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 10:49:30  INFO MyApp:180 - done over: {"time":364915,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 10:49:31  INFO MyApp:180 - done over: {"time":364425,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 10:49:33  INFO MyApp:180 - done over: {"time":366615,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 10:49:33  INFO MyApp:180 - done over: {"time":366184,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+2017-06-01 10:49:33  INFO MyApp:180 - done over: {"time":366978,"fail":0,"num":10000000,"batchSize":300,"singleDataSize":100,"totalMB":1000.0}
+
+
+
+```
+
+
